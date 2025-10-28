@@ -6,5 +6,4 @@ export interface Address {
     longitude?: number;
     // FK al usuario propietario (opcional). Mantenerlo opcional para flexibilidad.
     userId?: number;
-    user_id?: number; // alias para compatibilidad con backend snake_case
 }

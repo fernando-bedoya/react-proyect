@@ -2,16 +2,12 @@ import type { User } from "./User";
 import type { Role } from "./Role";
 
 export interface UserRole {
-    // backend usa UUIDs (string) para este id; aceptar number por compatibilidad
-    id?: string | number;
-    // corregido typo: startAt (acepta Date o ISO string)
-    startAt?: Date | string;
-    endAt?: Date | string;
-    // FK a User y Role (aceptar tanto camelCase como snake_case)
+    id?: number;
+    starAt?: Date;
+    endAt?: Date;
+    // FK a User y Role
     userId?: number;
-    user_id?: number;
     roleId?: number;
-    role_id?: number;
     // Referencias opcionales al objeto completo (si la API las devuelve embebidas)
     user?: User;
     role?: Role;
