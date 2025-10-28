@@ -17,6 +17,8 @@ export interface User {
     // Relación 1:n con Password: un usuario puede tener múltiples contraseñas
     // - `passwords` contiene las contraseñas asociadas cuando la API las devuelve embebidas
     passwords?: Password[];
+    // sesiones del usuario (si la API las devuelve)
+    sessions?: Session[];
     // Relación n:n con Role mediante UserRole
     // - `roles` es la lista de roles cuando la API devuelve los roles embebidos
     // - `userRoles` es la lista de relaciones intermedias (puede contener metadatos como `startAt`/`endAt`)
