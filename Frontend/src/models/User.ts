@@ -4,12 +4,6 @@ export interface User {
     name?: string;
     email?: string;
     password?:string;
-    age?: number;
-    city?: string;
-    phone?: string;
-    is_active?: boolean;
-    token?:string;
-    sessions?: Session[];
 }
 
 //aqui se pueden escribir metodos, aqui se tiran las cardinalidades de las relaciones
