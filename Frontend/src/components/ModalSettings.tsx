@@ -1,238 +1,256 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Form, Row, Col, Alert, Badge } from 'react-bootstrap';
+import GenericModal from './GenericModal';
 import dataJSON from '../../public/data.json';
 
+interface ModalProps {
+  closeModal: () => void;
+  onSubmit: (formData: FormState) => void;
+  defaultValue?: FormState;
+}
 
+interface FormState {
+  id: string;
+  para: string;
+  criterion: string;
+  value: string;
+  type: string;
+}
 
-export const Modal = ({ closeModal, onSubmit, defaultValue }) => {
-  const fields=Object.keys(Object.values(dataJSON)[0]).filter((item:any)=>!(item.startsWith("delta_")));
+export const Modal: React.FC<ModalProps> = ({ closeModal, onSubmit, defaultValue }) => {
+  const fields = Object.keys(Object.values(dataJSON)[0]).filter((item: string) => !item.startsWith("delta_"));
   
-  const [formState, setFormState] = useState(
+  const [formState, setFormState] = useState<FormState>(
     defaultValue || {
       id: "",
       para: "price",
-        criterion: "0",
-        value: "",
-        type: "0",
-
+      criterion: "0",
+      value: "",
+      type: "0",
     }
   );
   const [errors, setErrors] = useState<string[]>([]);
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     if (formState.id && formState.value) {
       setErrors([]);
       return true;
     } else {
-      let errorFields = [];
+      const errorFields: string[] = [];
       for (const [key, value] of Object.entries(formState)) {
-        console.log(key);
-        console.log(value);
         if (!value) {
-          errorFields.push(key=="id"?"Bond ID":key);
-        }
-        else{
-        if (key=='id'){
-          if (!(Object.keys(dataJSON).includes(value)||value=="ALL")){
-            errorFields.push("INVALID_ID_"+value)
+          errorFields.push(key === "id" ? "Bond ID" : key);
+        } else {
+          if (key === 'id') {
+            if (!(Object.keys(dataJSON).includes(value) || value === "ALL")) {
+              errorFields.push("INVALID_ID_" + value);
+            }
           }
         }
       }
-      }
-      console.log(errorFields);
       setErrors(errorFields);
       return false;
     }
   };
 
-  const handleChange = (e) => {
-    console.log(formState.criterion);
-    console.log(e.target.name);
-    console.log(e.target.name=="para"&&e.target.value=='rating');
-    console.log(formState.criterion>1&&formState.criterion<4);
-    console.log(e.target.value);
-    console.log(e.target.name=="para"&&e.target.value=='rating'&&formState.criterion>1&&formState.criterion<4);
-    if (e.target.name=="para"&&e.target.value=='rating'&&formState.criterion>1&&formState.criterion<4) {setFormState({ ...formState, ["criterion"]: 0 });}
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     
-    console.log(formState.criterion);
-    setFormState({ ...formState, [e.target.name]: e.target.value });
+    // Si cambia el parámetro a 'rating' y el criterio es 2 o 3, resetear a 0
+    if (name === "para" && value === 'rating' && 
+        parseInt(formState.criterion) > 1 && parseInt(formState.criterion) < 4) {
+      setFormState(prev => ({ ...prev, criterion: "0", [name]: value }));
+    } else {
+      setFormState(prev => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     if (!validateForm()) return;
 
     onSubmit(formState);
-
     closeModal();
   };
 
+  // Obtener el texto del criterio
+  const getCriterionText = (criterion: string): string => {
+    switch (criterion) {
+      case "0": return "goes down by";
+      case "1": return "goes up by";
+      case "2": return "is smaller than";
+      case "3": return "is greater than";
+      case "4": return "is equal to";
+      default: return "";
+    }
+  };
+
+  // Obtener el tipo de alerta y color
+  const getAlertTypeInfo = (type: string): { label: string; bg: string; variant: 'success' | 'warning' | 'danger' } => {
+    switch (type) {
+      case "0": return { label: "Info", bg: "bg-success", variant: "success" };
+      case "1": return { label: "Warning", bg: "bg-warning", variant: "warning" };
+      case "2": return { label: "Alert", bg: "bg-danger", variant: "danger" };
+      default: return { label: "Info", bg: "bg-success", variant: "success" };
+    }
+  };
+
+  const invalidIdErrors = errors.filter(item => item.startsWith("INVALID_ID"));
+  const otherErrors = errors.filter(item => !item.startsWith("INVALID_ID"));
+  const alertTypeInfo = getAlertTypeInfo(formState.type);
+
   return (
-    <div
-      className="modal-container fixed z-50 flex top-25 bottom-5 "
-      onClick={(e) => {
-        if (e.target.className === "modal-container") closeModal();
+    <GenericModal
+      show={true}
+      onHide={closeModal}
+      title="Configuración de Alerta de Bonos"
+      size="lg"
+      centered
+      showFooter
+      primaryButton={{
+        label: "Guardar Alerta",
+        onClick: handleSubmit,
+        variant: "success"
+      }}
+      secondaryButton={{
+        label: "Cancelar",
+        onClick: closeModal,
+        variant: "outline-secondary"
       }}
     >
-    
-      <div className="modal rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark overflow-auto">
-      <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-        <div className="w-full flex justify-end">
-      <strong className="text-xl align-center cursor-pointer "
-      onClick={closeModal}
-      >&times;</strong>
-      </div>
-        <form>
-        <div className="grid grid-cols-3 gap-5 justify-normal">
-          <div className="form-group w-full col-span-3">
-            <label  className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="id">Bond ID (Input "ALL" to track all bonds with paramaters below)</label>
-            <input className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          name="id" onChange={handleChange} value={formState.id} />
-          </div>
-          
-          <div className="form-group ">
-            <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="para">Parameter</label>
-            <div className="relative z-20 w-full rounded border border-stroke p-1.5 pr-8 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-                  <div className="flex flex-wrap items-center"></div>
-                  <span className="m-1.5 flex items-center justify-center rounded border-[.5px] border-stroke bg-gray py-1.5 px-2.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                      {formState.para}
-                      
-                            
-                    </span>
-                    <select
-                    className="absolute top-0 left-0 z-20 h-full w-full bg-transparent opacity-0"
-                        
-                    name="para"
-                    onChange={handleChange}
-                    value={formState.para}
-                    >
-                      {fields.map((item:any,idx:number)=>(<option key={idx} value={item}>{item}</option>))}
-                    
-                    </select>
-                    <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                            <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            >
-                            <g opacity="0.8">
-                                <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                fill="#637381"
-                                ></path>
-                            </g>
-                            </svg>
-                        </span>
-                    </div>
-            
-            </div>
-            
-          
-          
-          <div className="form-group">
-          <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="criterion">Criterion</label>
-            <div className="relative z-20 w-full rounded border border-stroke p-1.5 pr-8 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-                  <div className="flex flex-wrap items-center"></div>
-                  <span className="m-1.5 flex items-center justify-center rounded border-[.5px] border-stroke bg-gray py-1.5 px-2.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                      {formState.criterion==0?"goes down by":formState.criterion==1?"goes up by":formState.criterion==2?"is smaller than":formState.criterion==3?"is greater than":"is equal to"}
-                    </span>
-            <select
-            className="absolute top-0 left-0 z-20 h-full w-full bg-transparent opacity-0"
-              name="criterion"
-              onChange={handleChange}
-              value={formState.criterion}
-            >
-              <option value="0">goes down by</option>
-              <option value="1">goes up by</option>
-              {!(formState.para=='rating')&&<option value="2">is smaller than</option>}
-              {!(formState.para=='rating')&&<option value="3">is greater than</option>}
-              
-              <option value="4">is equal to</option>
-            </select>
-            <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                            <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            >
-                            <g opacity="0.8">
-                                <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                fill="#637381"
-                                ></path>
-                            </g>
-                            </svg>
-                        </span>
-                        </div>
-          </div>
-            <div className="form-group w-full">
-            <label  className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="value">Value to give Alert</label>
-            <input className="w-full rounded border border-stroke bg-gray py-3 pl-3 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                           name="value" onChange={handleChange} value={formState.value} />
-          </div>
-          
-          <div className="form-group">
-            <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="type">Alert Type</label>
-            <div className="relative z-20 w-full rounded border border-stroke p-1.5 pr-8 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-                  <div className="flex flex-wrap items-center"></div>
-                  <span className={`${formState.type==0?"bg-[#04b20c]":formState.type==1?"bg-[#eab90f]":"bg-[#e13f32]"} m-1.5 flex items-center justify-center rounded border-[.5px] border-stroke py-1.5 px-2.5 text-white font-medium dark:border-strokedark`}>
-                      {formState.type==0?"Info":formState.type==1?"Warning":"Alert"}
-                      
-                            
-                    </span>
-            <select
-            className="absolute top-0 left-0 z-20 h-full w-full bg-transparent opacity-0"
-              name="type"
-              onChange={handleChange}
-              value={formState.type}
-            >
-              <option value="0">Info</option>
-              <option value="1">Warning</option>
-              <option value="2">Alert</option>
-            </select>
-            <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                            <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            >
-                            <g opacity="0.8">
-                                <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                fill="#637381"
-                                ></path>
-                            </g>
-                            </svg>
-                        </span>
-                    </div>
-                </div>
-          </div>
-          {errors.filter((item:string)=>(item.startsWith("INVALID_ID"))).length>0 && <><br/><div className="error">{errors.filter((item:string)=>(item.startsWith("INVALID_ID")))[0].replace("INVALID_ID_","")} is not a valid bond</div></>}
-          {errors.filter((item:string)=>!(item.startsWith("INVALID_ID"))).length>0 && (<div className="error">Please input {errors.filter((item:string)=>!(item.startsWith("INVALID_ID"))).join(", ")}</div>)}
-          
-          
-          <br></br>
-          <button className="btn flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1"
-                      type="submit" onClick={handleSubmit}>
-            Submit
-          </button>
-        </form>
-      </div>
-      </div>
-    </div>
-    
+      <Form>
+        {/* Errores de validación */}
+        {invalidIdErrors.length > 0 && (
+          <Alert variant="danger" className="mb-3">
+            <strong>{invalidIdErrors[0].replace("INVALID_ID_", "")}</strong> no es un bono válido
+          </Alert>
+        )}
+        
+        {otherErrors.length > 0 && (
+          <Alert variant="warning" className="mb-3">
+            Por favor, complete los siguientes campos: <strong>{otherErrors.join(", ")}</strong>
+          </Alert>
+        )}
+
+        <Row className="g-3">
+          {/* Bond ID */}
+          <Col xs={12}>
+            <Form.Group>
+              <Form.Label className="fw-medium">
+                Bond ID 
+                <small className="text-muted ms-2">(Ingrese "ALL" para rastrear todos los bonos)</small>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="id"
+                value={formState.id}
+                onChange={handleChange}
+                placeholder="Ej: BOND001 o ALL"
+                className="shadow-sm"
+                isInvalid={errors.includes("Bond ID") || invalidIdErrors.length > 0}
+              />
+            </Form.Group>
+          </Col>
+
+          {/* Parámetro */}
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label className="fw-medium">Parámetro</Form.Label>
+              <div className="position-relative">
+                <Badge 
+                  bg="secondary" 
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 z-1"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {formState.para}
+                </Badge>
+                <Form.Select
+                  name="para"
+                  value={formState.para}
+                  onChange={handleChange}
+                  className="shadow-sm ps-5"
+                >
+                  {fields.map((item: string, idx: number) => (
+                    <option key={idx} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+            </Form.Group>
+          </Col>
+
+          {/* Criterio */}
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label className="fw-medium">Criterio</Form.Label>
+              <div className="position-relative">
+                <Badge 
+                  bg="info" 
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 z-1 text-truncate"
+                  style={{ pointerEvents: 'none', maxWidth: '70%' }}
+                >
+                  {getCriterionText(formState.criterion)}
+                </Badge>
+                <Form.Select
+                  name="criterion"
+                  value={formState.criterion}
+                  onChange={handleChange}
+                  className="shadow-sm"
+                  style={{ paddingLeft: '140px' }}
+                >
+                  <option value="0">goes down by</option>
+                  <option value="1">goes up by</option>
+                  {formState.para !== 'rating' && <option value="2">is smaller than</option>}
+                  {formState.para !== 'rating' && <option value="3">is greater than</option>}
+                  <option value="4">is equal to</option>
+                </Form.Select>
+              </div>
+            </Form.Group>
+          </Col>
+
+          {/* Valor */}
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label className="fw-medium">Valor para Alerta</Form.Label>
+              <Form.Control
+                type="text"
+                name="value"
+                value={formState.value}
+                onChange={handleChange}
+                placeholder="Ingrese valor"
+                className="shadow-sm"
+                isInvalid={errors.includes("value")}
+              />
+            </Form.Group>
+          </Col>
+
+          {/* Tipo de Alerta */}
+          <Col xs={12}>
+            <Form.Group>
+              <Form.Label className="fw-medium">Tipo de Alerta</Form.Label>
+              <div className="position-relative">
+                <Badge 
+                  bg={alertTypeInfo.variant}
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 z-1 text-white"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {alertTypeInfo.label}
+                </Badge>
+                <Form.Select
+                  name="type"
+                  value={formState.type}
+                  onChange={handleChange}
+                  className="shadow-sm ps-5"
+                >
+                  <option value="0">Info</option>
+                  <option value="1">Warning</option>
+                  <option value="2">Alert</option>
+                </Form.Select>
+              </div>
+            </Form.Group>
+          </Col>
+        </Row>
+      </Form>
+    </GenericModal>
   );
 };

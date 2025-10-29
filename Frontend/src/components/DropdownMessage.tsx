@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import UserOne from '../images/user/user-01.png';
 import UserTwo from '../images/user/user-02.png';
@@ -8,6 +8,7 @@ import UserFour from '../images/user/user-04.png';
 
 const DropdownMessage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -40,11 +41,10 @@ const DropdownMessage = () => {
 
   return (
     <li className="relative" x-data="{ dropdownOpen: false, notifying: true }">
-      <Link
+      <button
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
-        to="#"
       >
         <span className="absolute -top-0.5 -right-0.5 z-1 h-2 w-2 rounded-full bg-meta-1">
           <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
@@ -75,7 +75,7 @@ const DropdownMessage = () => {
             fill=""
           />
         </svg>
-      </Link>
+      </button>
 
       {/* <!-- Dropdown Start --> */}
       <div
@@ -90,11 +90,14 @@ const DropdownMessage = () => {
           <h5 className="text-sm font-medium text-bodydark2">Messages</h5>
         </div>
 
-        <ul className="flex h-auto flex-col overflow-y-auto">
+                <ul className="flex h-auto flex-col overflow-y-auto">
           <li>
-            <Link
-              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="/messages"
+            <div
+              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => {
+                navigate('/messages');
+                setDropdownOpen(false);
+              }}
             >
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserTwo} alt="User" />
@@ -107,12 +110,15 @@ const DropdownMessage = () => {
                 <p className="text-sm">I like your confidence 💪</p>
                 <p className="text-xs">2min ago</p>
               </div>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="/messages"
+            <div
+              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => {
+                navigate('/messages');
+                setDropdownOpen(false);
+              }}
             >
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserOne} alt="User" />
@@ -125,12 +131,15 @@ const DropdownMessage = () => {
                 <p className="text-sm">Can you share your offer?</p>
                 <p className="text-xs">10min ago</p>
               </div>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="/messages"
+            <div
+              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => {
+                navigate('/messages');
+                setDropdownOpen(false);
+              }}
             >
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserThree} alt="User" />
@@ -143,12 +152,15 @@ const DropdownMessage = () => {
                 <p className="text-sm">I cam across your profile and...</p>
                 <p className="text-xs">1day ago</p>
               </div>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="/messages"
+            <div
+              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => {
+                navigate('/messages');
+                setDropdownOpen(false);
+              }}
             >
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserFour} alt="User" />
@@ -158,15 +170,18 @@ const DropdownMessage = () => {
                 <h6 className="text-sm font-medium text-black dark:text-white">
                   Cody Fisher
                 </h6>
-                <p className="text-sm">I’m waiting for you response!</p>
+                <p className="text-sm">I'm waiting for you response!</p>
                 <p className="text-xs">5days ago</p>
               </div>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="/messages"
+            <div
+              className="flex gap-4.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => {
+                navigate('/messages');
+                setDropdownOpen(false);
+              }}
             >
               <div className="h-12.5 w-12.5 rounded-full">
                 <img src={UserTwo} alt="User" />
@@ -179,7 +194,7 @@ const DropdownMessage = () => {
                 <p className="text-sm">I like your confidence 💪</p>
                 <p className="text-xs">2min ago</p>
               </div>
-            </Link>
+            </div>
           </li>
         </ul>
       </div>

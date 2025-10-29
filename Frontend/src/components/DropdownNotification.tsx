@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -34,10 +33,9 @@ const DropdownNotification = () => {
 
   return (
     <li className="relative">
-      <Link
+      <button
         ref={trigger}
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
         <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
@@ -57,7 +55,7 @@ const DropdownNotification = () => {
             fill=""
           />
         </svg>
-      </Link>
+      </button>
 
       <div
         ref={dropdown}
@@ -73,9 +71,9 @@ const DropdownNotification = () => {
 
         <ul className="flex h-auto flex-col overflow-y-auto">
           <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
+            <div
+              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => setDropdownOpen(false)}
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
@@ -86,12 +84,12 @@ const DropdownNotification = () => {
               </p>
 
               <p className="text-xs">12 May, 2025</p>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
+            <div
+              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => setDropdownOpen(false)}
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
@@ -101,12 +99,12 @@ const DropdownNotification = () => {
               </p>
 
               <p className="text-xs">24 Feb, 2025</p>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
+            <div
+              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => setDropdownOpen(false)}
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
@@ -117,12 +115,12 @@ const DropdownNotification = () => {
               </p>
 
               <p className="text-xs">04 Jan, 2025</p>
-            </Link>
+            </div>
           </li>
           <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
+            <div
+              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 cursor-pointer"
+              onClick={() => setDropdownOpen(false)}
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
@@ -133,7 +131,7 @@ const DropdownNotification = () => {
               </p>
 
               <p className="text-xs">01 Dec, 2024</p>
-            </Link>
+            </div>
           </li>
         </ul>
       </div>

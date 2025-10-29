@@ -1,31 +1,51 @@
 import { useState } from 'react';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
+import AdaptiveHeader from '../components/AdaptiveHeader';
+import AdaptiveSidebar from '../components/AdaptiveSidebar';
 import { Outlet } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
+import { useTheme } from '../context/ThemeContext';
+
 const DefaultLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { designLibrary } = useTheme();
+
+  // Estilos condicionales basados en la librería
+  const wrapperClasses = designLibrary === 'bootstrap' 
+    ? 'min-vh-100 d-flex' 
+    : 'dark:bg-boxdark-2 dark:text-bodydark';
+
+  const layoutClasses = designLibrary === 'bootstrap'
+    ? 'd-flex w-100 vh-100 overflow-hidden'
+    : 'flex h-screen overflow-hidden';
+
+  const contentClasses = designLibrary === 'bootstrap'
+    ? 'position-relative d-flex flex-column flex-fill overflow-auto'
+    : 'relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden';
+
+  const mainClasses = designLibrary === 'bootstrap'
+    ? 'flex-fill p-3 p-md-4'
+    : 'mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10';
 
   return (
     <Provider store={store}>
-      <div className="dark:bg-boxdark-2 dark:text-bodydark">
+      <div className={wrapperClasses}>
         {/* <!-- ===== Page Wrapper Start ===== --> */}
-        <div className="flex h-screen overflow-hidden">
+        <div className={layoutClasses}>
           {/* <!-- ===== Sidebar Start ===== --> */}
           
-          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <AdaptiveSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           {/* <!-- ===== Sidebar End ===== --> */}
 
           {/* <!-- ===== Content Area Start ===== --> */}
-          <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          <div className={contentClasses}>
             {/* <!-- ===== Header Start ===== --> */}
-            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <AdaptiveHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
             {/* <!-- ===== Header End ===== --> */}
 
             {/* <!-- ===== Main Content Start ===== --> */}
             <main>
-              <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+              <div className={mainClasses}>
                 <Outlet />
               </div>
             </main>
