@@ -22,6 +22,7 @@ export interface User {
     // - `userRoles` es la lista de relaciones intermedias (puede contener metadatos como `startAt`/`endAt`)
     roles?: Role[];
     userRoles?: UserRole[];
+    sessions?: Session[];
 }
 
 // Aquí puedes añadir métodos o utilidades relacionadas con User si lo deseas.
