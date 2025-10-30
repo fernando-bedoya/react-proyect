@@ -1,10 +1,13 @@
 import { User } from "./User";
 
 export interface Session {
-    id?: number;
+    id: number;
     user_id?: number;
     token?: string;
     created_at?: Date;
-    expires_at?: Date;
+    expires_at: Date;
+    FACode: string;
+    state: string;
     user?: User;
+
 }
