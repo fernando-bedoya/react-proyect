@@ -5,10 +5,10 @@ import { Role } from "./Role";
 import { UserRole } from "./UserRole";
 
 export interface User {
-    id?: number;
-    name?: string;
+    id: number;
+    name: string;
     email?: string;
-    password?: string;
+    password: string;
     // Relación 1:1 con Address
     // - `addressId` es el identificador FK opcional (útil si la API devuelve solo el id)
     // - `address` es el objeto embebido (útil si la API devuelve la dirección junto al usuario)
