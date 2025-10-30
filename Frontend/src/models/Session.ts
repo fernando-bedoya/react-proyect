@@ -1,66 +1,28 @@
 /**
- * Interfaz que representa la respuesta del backend (snake_case).
- * Útil para tipar las respuestas de la API directamente.
+ * ============================================================================
+ * Session - Modelo de Dominio
+ * ============================================================================
+ * 
+ * Interfaz que representa una sesión en el dominio de la aplicación.
+ * Relación 1:n con User: un usuario puede tener múltiples sesiones activas.
+ * 
+ * Nota: Para tipos de API y mappers, ver src/types/api.ts
+ * ============================================================================
  */
-export interface SessionApi {
-  id: string;           // UUID (string en el backend)
-  user_id: number;      // FK al User.id
-  token: string;
-  expiration: string;   // ISO datetime string
-  FACode?: string;
-  state: string;
-  created_at?: string;  // ISO datetime string
-  updated_at?: string;  // ISO datetime string
-  // si el backend devuelve el usuario embebido:
-  user?: any;
-}
 
 /**
- * Interfaz para uso interno en el frontend (camelCase + Date).
- * Se obtiene transformando SessionApi con mapSessionApiToSession.
+ * Interfaz Session - Modelo de dominio (camelCase).
+ * Representa una sesión activa de un usuario en el sistema.
  */
 export interface Session {
-  id: string;
-  userId: number;
-  token: string;
-  expiration: Date;
-  FACode?: string;
-  state: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  // si el backend devuelve el usuario embebido:
-  user?: import("./User").User;
-}
-
-/**
- * Mapper: transforma la respuesta de la API (snake_case) a objeto Session (camelCase).
- */
-export function mapSessionApiToSession(api: SessionApi): Session {
-  return {
-    id: api.id,
-    userId: api.user_id,
-    token: api.token,
-    expiration: new Date(api.expiration),
-    FACode: api.FACode,
-    state: api.state,
-    createdAt: api.created_at ? new Date(api.created_at) : undefined,
-    updatedAt: api.updated_at ? new Date(api.updated_at) : undefined,
-    // user: api.user ? mapUserApiToUser(api.user) : undefined, // descomentar si necesitas mapear user embebido
-  };
-}
-
-/**
- * Mapper inverso: transforma un objeto Session (camelCase) a formato API (snake_case).
- * Útil para enviar datos al backend (POST/PUT).
- */
-export function mapSessionToSessionApi(session: Partial<Session>): Partial<SessionApi> {
-  return {
-    id: session.id,
-    user_id: session.userId,
-    token: session.token,
-    expiration: session.expiration?.toISOString(),
-    FACode: session.FACode,
-    state: session.state,
-    // created_at y updated_at normalmente no se envían en POST/PUT
-  };
+    id: string;           // UUID único de la sesión
+    userId: number;       // FK al User.id (relación 1:n)
+    token: string;        // Token de autenticación
+    expiration: Date;     // Fecha/hora de expiración
+    FACode?: string;      // Código de autenticación de dos factores (opcional)
+    state: string;        // Estado de la sesión (ej: 'active', 'inactive', 'expired')
+    createdAt?: Date;     // Fecha de creación
+    updatedAt?: Date;     // Fecha de última actualización
+    // Si el backend devuelve el usuario embebido:
+    user?: import("./User").User;
 }

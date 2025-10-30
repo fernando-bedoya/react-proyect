@@ -1,6 +1,7 @@
 import axios from "axios";
 import { User } from "../models/User";
-import { Session, SessionApi, mapSessionApiToSession, mapSessionToSessionApi } from "../models/Session";
+import { Session } from "../models/Session";
+import { SessionApi, mapSessionApiToSession, mapSessionToSessionApi } from "../types/api";
 import { store } from "../store/store";
 import { setUser } from "../store/userSlice";
 
